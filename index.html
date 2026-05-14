@@ -293,18 +293,13 @@
     <header class="hero">
       <p class="eyebrow">Loggbok Robot</p>
       <h1>Skipsdagbøker fra kysten</h1>
-      <p class="subtitle">Et eksperiment mellom kunst, historie og kunstig intelligens</p>
+      <p class="subtitle">Et generativt eksperiment som skriver skipsdagbøker som aldri ble skrevet — forankret i ekte steder, ekte vær og en kapteins stemme fra en annen tid. — <a href="om.html" style="color:var(--accent)">Les mer om prosjektet</a></p>
     </header>
 
     <main class="layout">
       <aside class="panel">
         <h2>Navigasjon</h2>
-        <p class="hint">Bruk nedtrekkslisten eller listen under for å hoppe til en annen logg. Nyeste gyldige logg lastes automatisk.</p>
-        <div class="field">
-          <label for="entrySelect">Velg logg</label>
-          <select id="entrySelect"></select>
-        </div>
-
+        <p class="hint">Klikk på en logg for å lese den. Nyeste gyldige logg lastes automatisk.</p>
         <div id="entryList" class="entry-list" aria-label="Tilgjengelige logger"></div>
       </aside>
 
@@ -354,7 +349,6 @@
 
     const statusEl = document.getElementById("status");
     const viewerEl = document.getElementById("viewer");
-    const entrySelect = document.getElementById("entrySelect");
     const entryList = document.getElementById("entryList");
 
     function setStatus(message) {
@@ -514,14 +508,9 @@
     }
 
     function renderEntryControls() {
-      entrySelect.innerHTML = "";
       entryList.innerHTML = "";
 
       if (!state.entries.length) {
-        const option = document.createElement("option");
-        option.textContent = "Ingen logger";
-        entrySelect.appendChild(option);
-
         const empty = document.createElement("p");
         empty.className = "empty";
         empty.textContent = "Ingen logger i registeret.";
@@ -530,12 +519,6 @@
       }
 
       for (const entry of state.entries) {
-        const option = document.createElement("option");
-        option.value = entry.filename;
-        option.textContent = `${prettyName(entry.filename)} · ${formatTimestamp(entry.timestamp)}`;
-        option.selected = entry.filename === state.activeFilename;
-        entrySelect.appendChild(option);
-
         const button = document.createElement("button");
         button.type = "button";
         button.className = `entry-item${entry.filename === state.activeFilename ? " active" : ""}`;
@@ -595,10 +578,6 @@
 
       setStatus("Fant ingen lesbare loggfiler i registeret.");
     }
-
-    entrySelect.addEventListener("change", (event) => {
-      loadLog(event.target.value);
-    });
 
     async function init() {
       try {

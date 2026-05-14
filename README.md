@@ -1,187 +1,50 @@
-# Loggbok Robot 📖⚓
+# Loggbok Robot
 
-Generate creative and authentic ship log entries in Norwegian using weather data and location information from the Sørland fjords.
+Et generativt kunstverk som skriver skipsdagbøker som aldri ble skrevet — forankret i ekte steder, ekte vær og en kapteins stemme fra en annen tid.
 
-## Overview
+## Hvordan det virker
 
-This tool combines:
-- **Real location data**: Randomly selected lighthouses from `fyrlykter_sorlandet.geojson`
-- **Real weather data**: Current conditions fetched from the Met.no API
-- **AI generation**: Ollama-powered creative generation in the style of 1500-1800 ship logs
-- **Historical authenticity**: Grounded by real log entry examples from the era
+1. Tilfeldig fyr velges fra Kystverkets database langs Sørlandskysten
+2. Sanntidsvær hentes fra Met.no sitt API for det valgte fyret
+3. Historiske skipsdagbøker brukes som stilreferanse
+4. En systeminstruks binder alt sammen til ett prompt
+5. Gemma 4 31B (via Ollama) genererer én dagbokoppføring
+6. Resultatet lagres som Markdown og indekseres i `registry.json`
 
-## Installation
+Kjøres automatisk på ulike dager og tidspunkter via GitHub Actions.
 
-### Using uv (recommended)
-
-```bash
-# Install dependencies
-uv sync
-
-# Run the script
-uv run main.py
-```
-
-
-## Prerequisites
-
-1. **Ollama**: Must be running locally on `localhost:11434`
-   - Download: https://ollama.ai
-   - Run: `ollama serve`
-   - Pull a model: `ollama pull mistral` (or another model)
-
-2. **Data files**:
-   - `fyrlykter_sorlandet.geojson` - Lighthouse locations (included)
-   - `logsample.md` - Historical log entries for reference (included)
-
-## Usage
-
-### Basic usage (output to terminal)
-
-```bash
-uv run main.py
-```
-
-### Save to markdown file
+## Kjøre lokalt
 
 ```bash
 uv run main.py --output markdown
 ```
 
-Creates a markdown file in `logs/` directory with timestamp and adds entry to `registry.json`.
+Krever [Ollama](https://ollama.ai) kjørende lokalt med `gemma4:31b-cloud` eller tilsvarende modell.
 
-### Send to webhook
+### Flagg
 
-```bash
-uv run main.py --output webhook --webhook-url https://example.com/webhook
-```
+| Flagg | Verdier | Standard |
+|---|---|---|
+| `--output` | `shell`, `markdown`, `webhook` | `shell` |
+| `--model` | Ollama-modellnavn | `gemma4:31b-cloud` |
+| `--webhook-url` | URL | — |
 
-### Specify a different Ollama model
-
-```bash
-uv run main.py --model neural-chat
-# or
-uv run main.py --output markdown --model mistral
-```
-
-## Output Format
-
-### Shell output
-```
-📍 Ternholmen (58.844°, 9.490°)
-🌦️ Temperature: 12°C | Wind speed: 4.5 m/s | Humidity: 72%
-
-📖 Dagbokoppføring:
-Oktober 15: Klart vær med mild bris fra sørvest. Alle seil satt. Styrende NØ langs kysten.
-Så flere hbirder. Sjøen flat. Moderat strøm. Alt vel om bord. Så andre skip på avstanden.
-```
-
-### Markdown output
-Creates `logs/skipsdagbok_YYYYMMDD_HHMMSS.md` with metadata and log entry.
-
-### Webhook output
-Sends JSON payload:
-```json
-{
-  "timestamp": "2025-04-17T14:30:00",
-  "location": "Ternholmen",
-  "coordinates": {
-    "latitude": 58.844,
-    "longitude": 9.490
-  },
-  "log_entry": "Oktober 15: Klart vær..."
-}
-```
-
-## Architecture
-
-### Main Components
-
-1. **Location Data**: Random selection from `fyrlykter_sorlandet.geojson`
-2. **Weather API**: Met.no nowcast API for real conditions
-3. **LLM Generation**: Ollama with Mistral (or custom model)
-4. **Output Options**: 
-   - Echo to shell (default)
-   - Save to markdown with registry
-   - Call webhook endpoint
-
-### Prompt Strategy
-
-The system uses:
-- A detailed system prompt with historical examples from `logsample.md`
-- Context: location name, coordinates, weather conditions
-- Generates creative but plausible log entries matching the historical style
-
-## Configuration
-
-All options are command-line arguments:
-
-```bash
-uv run main.py --help
-```
-
-Options:
-- `--output`: shell, markdown, or webhook (default: shell)
-- `--webhook-url`: URL for webhook output
-- `--model`: Ollama model name (default: mistral)
-
-## Project Structure
+## Prosjektstruktur
 
 ```
 loggbok_robot/
-├── main.py                          # Main script
-├── pyproject.toml                   # Project config (uv)
-├── README.md                        # This file
-├── fyrlykter_sorlandet.geojson     # Lighthouse data
-├── logsample.md                     # Historical examples
-├── logs/                            # Output directory (created on markdown output)
-├── registry.json                    # Entries registry (created on markdown output)
-└── [other files]
+├── main.py                        # Hovedskript
+├── fyrlykter_sorlandet.geojson   # Fyrlykt-database (Kystverket)
+├── index.html                     # Visning av loggbøkene
+├── om.html                        # Om prosjektet
+├── logs/                          # Genererte oppføringer (Markdown)
+├── registry.json                  # Indeks over alle oppføringer
+└── samples and plans/             # Referanseeksempler og notater
 ```
 
-## Examples
+## Kilder
 
-### Generate and display in terminal
-```bash
-uv run main.py
-```
-
-### Generate and save to file
-```bash
-uv run main.py --output markdown
-# Check registry.json to see all saved entries
-```
-
-### Automated generation with webhook
-```bash
-# Set up a cron job or similar
-uv run main.py --output webhook --webhook-url https://myserver.com/logs
-```
-
-## Notes
-
-- The system is designed to be simple and modular
-- All dependencies are Python-only (no external commands needed)
-- Weather data is real-time from Met.no
-- Log generation requires Ollama running locally
-- Each run selects a different random location and generates unique content
-
-## Future Enhancements
-
-- Database storage option instead of JSON registry
-- Multiple language support
-- Customizable historical periods
-- Ship type specification (whaling, merchant, fishing, etc.)
-- Batch generation mode
-
----
-
-## Sources
-- https://fromthepage.com/nharl/ships-logs-collection/ms220-log4
-- https://web.archive.org/web/20041229065525/http://heim.ifi.uio.no/~oddharry/dsfmc/etext/najaden.html
-- https://kartkatalog.geonorge.no/metadata/navigasjonsinstallasjoner-wfs/73e46cf4-d9f5-4d75-b148-bb5edf888c4a
-- https://api.met.no/weatherapi/locationforecast/2.0/documentation
-
-
-**Author**: Created for autonomous ship log generation 
-**License**: MIT
+- [Ships Logs Collection — FromThePage](https://fromthepage.com/nharl/ships-logs-collection/ms220-log4)
+- [Najaden — norsk skipsdagbok (UiO-arkiv)](https://web.archive.org/web/20041229065525/http://heim.ifi.uio.no/~oddharry/dsfmc/etext/najaden.html)
+- [Navigasjonsinstallasjoner WFS — Geonorge / Kystverket](https://kartkatalog.geonorge.no/metadata/navigasjonsinstallasjoner-wfs/73e46cf4-d9f5-4d75-b148-bb5edf888c4a)
+- [Locationforecast 2.0 — Meteorologisk institutt](https://api.met.no/weatherapi/locationforecast/2.0/documentation)
