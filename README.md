@@ -176,5 +176,12 @@ uv run main.py --output webhook --webhook-url https://myserver.com/logs
 
 ---
 
+## Sources
+- https://fromthepage.com/nharl/ships-logs-collection/ms220-log4
+- https://web.archive.org/web/20041229065525/http://heim.ifi.uio.no/~oddharry/dsfmc/etext/najaden.html
+- https://kartkatalog.geonorge.no/metadata/navigasjonsinstallasjoner-wfs/73e46cf4-d9f5-4d75-b148-bb5edf888c4a
+- https://api.met.no/weatherapi/locationforecast/2.0/documentation
+
+
 **Author**: Created for autonomous ship log generation 
 **License**: MIT

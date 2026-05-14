@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Om prosjektet — Loggbok Robot</title>
+  <style>
+    :root {
+      --bg: #f4efe5;
+      --paper: #fbf8f1;
+      --ink: #1f2a2e;
+      --muted: #6e7068;
+      --accent: #164b63;
+      --accent-soft: #dbe7ec;
+      --border: #d3cab8;
+      --shadow: 0 18px 40px rgba(41, 34, 24, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(22, 75, 99, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe7d8 0%, var(--bg) 32%, #ebe3d1 100%);
+    }
+
+    .shell {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    nav {
+      margin-bottom: 36px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    nav a { color: var(--accent); text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+
+    .hero { margin-bottom: 48px; }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.0;
+      font-weight: 700;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* ── Sections ────────────────────────────────────── */
+    section { margin-bottom: 52px; }
+
+    h2 {
+      margin: 0 0 20px;
+      font-size: 1.45rem;
+      color: var(--ink);
+    }
+
+    h2 .num {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      font-style: normal;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .card {
+      background: color-mix(in srgb, var(--paper) 92%, white 8%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 28px 32px;
+    }
+
+    p { margin: 0 0 1em; line-height: 1.7; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── Pipeline diagram ──────────────────────────────── */
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Trigger box at top */
+    .pl-trigger {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #f0f5f8;
+      border: 1px dashed rgba(22, 75, 99, 0.35);
+      border-radius: 14px;
+      padding: 13px 17px;
+    }
+
+    .pl-trigger-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .pl-trigger-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .pl-trigger-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* Each step = numbered circle (track) + content box */
+    .pl-step {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      align-items: stretch;
+    }
+
+    .pl-track {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 3px;
+    }
+
+    .pl-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .pl-vert {
+      width: 2px;
+      background: var(--border);
+      flex: 1;
+      min-height: 16px;
+    }
+
+    .pl-box {
+      background: #f8f4eb;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 17px;
+      margin-bottom: 4px;
+      align-self: start;
+    }
+
+    /* Step 4 gets a tinted look to signal "wrapping" role */
+    .pl-box--system {
+      background: var(--accent-soft);
+      border-color: rgba(22, 75, 99, 0.28);
+    }
+
+    .pl-source {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 5px;
+    }
+
+    .pl-box p {
+      margin: 0;
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    /* Connector row — shows label text beside the vertical line */
+    .pl-conn {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      align-items: center;
+      min-height: 28px;
+    }
+
+    .pl-conn-track {
+      display: flex;
+      justify-content: center;
+    }
+
+    .pl-conn-vert {
+      width: 2px;
+      height: 100%;
+      min-height: 28px;
+      background: var(--border);
+    }
+
+    .pl-conn-label {
+      font-size: 0.74rem;
+      color: var(--muted);
+      font-style: italic;
+      padding-left: 2px;
+    }
+
+    /* Arrow leading into Gemma box */
+    .pl-to-model {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 0;
+    }
+
+    .pl-to-model .pl-conn-vert { height: 20px; min-height: 20px; }
+
+    .pl-arrow-head {
+      color: var(--border);
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    /* Gemma / model box */
+    .pl-model {
+      background: var(--accent);
+      color: #f0f6f9;
+      border-radius: 16px;
+      padding: 18px 22px;
+    }
+
+    .pl-model-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 5px;
+    }
+
+    .pl-model-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .pl-model-sub {
+      font-size: 0.82rem;
+      opacity: 0.72;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    /* Outputs */
+    .pl-out-conn {
+      display: flex;
+      justify-content: center;
+      padding: 6px 0;
+    }
+
+    .pl-out-conn .pl-conn-vert { height: 20px; min-height: 20px; }
+
+    .pl-outputs {
+      display: flex;
+      gap: 12px;
+    }
+
+    .pl-out {
+      flex: 1;
+      background: #f8f4eb;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 16px;
+    }
+
+    .pl-out .pl-source { margin-bottom: 4px; }
+
+    .pl-out p {
+      margin: 0;
+      font-size: 0.88rem;
+      line-height: 1.4;
+    }
+
+    /* ── Artistic section ────────────────────────────── */
+    .art-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .art-card {
+      background: #f8f4eb;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+    }
+
+    .art-card .art-icon {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .art-card h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .art-card p {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    /* ── References ─────────────────────────────────── */
+    .ref-list {
+      list-style: none;
+      margin: 20px 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .ref-list li {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ref-list a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .ref-list a:hover { text-decoration: underline; }
+
+    .ref-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    blockquote {
+      margin: 24px 0 0;
+      padding: 18px 24px;
+      border-left: 3px solid var(--accent);
+      background: #f2ede1;
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+      color: var(--muted);
+      font-size: 1.0rem;
+      line-height: 1.65;
+    }
+
+    /* ── Responsive ──────────────────────────────────── */
+    @media (max-width: 640px) {
+      .art-grid { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
+      .pl-outputs { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <nav><a href="index.html">← Tilbake til loggbøkene</a></nav>
+
+  <header class="hero">
+    <p class="eyebrow">Om prosjektet</p>
+    <h1>Loggbok Robot</h1>
+    <p class="lead">
+      Et generativt kunstverk som skriver skipsdagbøker som aldri ble skrevet —
+      forankret i ekte steder, ekte vær og en kapteins stemme fra en annen tid.
+    </p>
+  </header>
+
+  <!-- ── Pipeline diagram ─────────────────────────────── -->
+  <section>
+    <h2>Slik virker det</h2>
+    <div class="card">
+      <div class="pipeline">
+
+        <!-- Trigger: GitHub Actions -->
+        <div class="pl-trigger">
+          <span class="pl-trigger-icon">⏱</span>
+          <div>
+            <div class="pl-trigger-title">GitHub Actions — automatisk kjøring</div>
+            <div class="pl-trigger-sub">Utløses på ulike dager og tidspunkter via cron-schedule i workflow</div>
+          </div>
+        </div>
+
+        <!-- Arrow down from trigger -->
+        <div class="pl-to-model">
+          <div class="pl-conn-vert"></div>
+          <span class="pl-arrow-head">▼</span>
+        </div>
+
+        <!-- Step 1: Fyrlykt -->
+        <div class="pl-step">
+          <div class="pl-track">
+            <div class="pl-num">1</div>
+            <div class="pl-vert"></div>
+          </div>
+          <div class="pl-box">
+            <span class="pl-source">Kystverkets database over navigasjonsinstallasjoner</span>
+            <p>Et tilfeldig fyr velges — navn, sted og nøyaktige koordinater langs Sørlandskysten</p>
+          </div>
+        </div>
+
+        <!-- Connector 1→2: koordinater sendes videre -->
+        <div class="pl-conn">
+          <div class="pl-conn-track"><div class="pl-conn-vert"></div></div>
+          <span class="pl-conn-label">koordinater sendes videre ↓</span>
+        </div>
+
+        <!-- Step 2: Met.no -->
+        <div class="pl-step">
+          <div class="pl-track">
+            <div class="pl-num">2</div>
+            <div class="pl-vert"></div>
+          </div>
+          <div class="pl-box">
+            <span class="pl-source">Met.no API</span>
+            <p>Sanntidsvær hentes for koordinatene fra forrige steg — temperatur, vind, trykk, skydekke</p>
+          </div>
+        </div>
+
+        <!-- Connector 2→3 -->
+        <div class="pl-conn">
+          <div class="pl-conn-track"><div class="pl-conn-vert"></div></div>
+          <span class="pl-conn-label">kombineres med ↓</span>
+        </div>
+
+        <!-- Step 3: Loggbok-referanser -->
+        <div class="pl-step">
+          <div class="pl-track">
+            <div class="pl-num">3</div>
+            <div class="pl-vert"></div>
+          </div>
+          <div class="pl-box">
+            <span class="pl-source">Historiske skipsdagbøker</span>
+            <p>Stileksempler fra ekte loggbøker (1700–1800-tallet) brukes som tone- og formbilde</p>
+          </div>
+        </div>
+
+        <!-- Connector 3→4 -->
+        <div class="pl-conn">
+          <div class="pl-conn-track"><div class="pl-conn-vert"></div></div>
+          <span class="pl-conn-label">pakkes inn i ↓</span>
+        </div>
+
+        <!-- Step 4: Systeminstruks -->
+        <div class="pl-step">
+          <div class="pl-track">
+            <div class="pl-num">4</div>
+            <div class="pl-vert"></div>
+          </div>
+          <div class="pl-box pl-box--system">
+            <span class="pl-source">Systeminstruks</span>
+            <p>Binder alt sammen til ett prompt — rollen, perioden (1500–1800), stedet og stilen</p>
+          </div>
+        </div>
+
+        <!-- Arrow down to model -->
+        <div class="pl-to-model">
+          <div class="pl-conn-vert"></div>
+          <span class="pl-arrow-head">▼</span>
+        </div>
+
+        <!-- Gemma / Ollama -->
+        <div class="pl-model">
+          <div class="pl-model-label">Generering — ett kall</div>
+          <div class="pl-model-title">Gemma 4 31B via Ollama</div>
+          <p class="pl-model-sub">Kjøres lokalt eller i skyen — produserer én dagbokoppføring</p>
+        </div>
+
+        <!-- Arrow down to outputs -->
+        <div class="pl-out-conn">
+          <div class="pl-conn-vert"></div>
+        </div>
+
+        <!-- Outputs -->
+        <div class="pl-outputs">
+          <div class="pl-out">
+            <span class="pl-source">Lagring</span>
+            <p>Markdown-fil og JSON-register med metadata</p>
+          </div>
+          <div class="pl-out">
+            <span class="pl-source">Visning</span>
+            <p>HTML-visning med alle oppføringer, vær og posisjon</p>
+          </div>
+        </div>
+
+      </div><!-- .pipeline -->
+    </div>
+  </section>
+
+  <!-- ── Artistic statement ─────────────────────────── -->
+  <section>
+    <h2>Kunstnerisk intensjon</h2>
+    <div class="card">
+
+      <p>
+        Loggbok Robot er en utforskning mellom kunst og teknologi - sant og falskt.
+        Hver oppføring eksisterer i skjæringspunktet mellom det som faktisk skjer
+        akkurat nå (temperatur, vindretning, barometrisk trykk ved et ekte punkt på kysten)
+        og det som aldri hendte (kapteinen, skuta, reisen).
+        Resultatet er noe som hverken er sant eller falskt.
+      </p>
+
+      <div class="art-grid">
+
+        <div class="art-card">
+          <span class="art-icon">⚓</span>
+          <h3>Det fiktive møter det virkelige</h3>
+          <p>
+            Koordinatene er reelle. Lufttrykket er reelt. Fyrlykta finnes.
+            Kapteinen finnes ikke — men han skriver om akkurat det vannet
+            som akkurat nå bølger mot akkurat den klippen.
+            Fiksjonen henter tyngde fra virkeligheten, og virkeligheten
+            får mening gjennom fiksjonen.
+          </p>
+        </div>
+
+        <div class="art-card">
+          <span class="art-icon">💡</span>
+          <h3>Kunst eller teknologi</h3>
+          <p>
+            Hvor skapes det kreative? Er det kreativt? Er det systeminstruksen? Er det det store nevralnettet? Er det jeg som programmerer? Eller er det i skjæringspunktet mellom alle disse elementene, i det uforutsigbare samspillet som oppstår når de møtes?
+          </p>
+        </div>
+
+        <div class="art-card">
+          <span class="art-icon">🔭</span>
+          <h3>Et enkelt tidspunkt — uendelig rom</h3>
+          <p>
+            Hver oppføring er et stillbilde: ett sted, én time, én kaptein. Likevel peker den mot et helt liv, en hel reise,
+            et mannskap vi aldri møter.
+          </p>
+        </div>
+
+      </div>
+
+      <blockquote>
+        «Teknologien er verktøyet. Kunsten er det øyeblikket du lurer på
+        om kapteinen var redd da han så tåka legge seg over Oksøy —
+        og erkjenner at du aldri vil vite det.»
+      </blockquote>
+
+    </div>
+  </section>
+
+  <!-- ── Technical note ────────────────────────────── -->
+  <section>
+    <h2>Teknisk</h2>
+    <div class="card">
+      <p>
+        Prosjektet er skrevet i Python. Modellen — Gemma 4 31B fra Google DeepMind — kjøres lokalt eller
+        via Ollama Cloud. Fyrlykter er hentet fra Kystverkets database over navigasjonsinstallasjoner. Værdata hentes fra Meteorologisk institutts
+        <em>locationforecast</em>-API ved kjøringstidspunkt.
+      </p>
+      <p>
+        Resultatet lagres som Markdown og indekseres i et JSON-register.
+        Denne HTML-visningen leser registeret direkte fra disk — ingen server,
+        ingen database, ingen pålogging.
+      </p>
+
+      <ul class="ref-list">
+        <li>
+          <a href="https://fromthepage.com/nharl/ships-logs-collection/ms220-log4" target="_blank" rel="noopener">Ships Logs Collection — Log of the ship Alexander, (1827-1830)</a>
+          <span class="ref-desc">Transkriberte historiske skipsdagbøker fra skipet Alexander, (1827-1830). Brukt som stilmessig referanse og eksempel på autentisk loggbokspråk.</span>
+        </li>
+        <li>
+          <a href="https://web.archive.org/web/20041229065525/http://heim.ifi.uio.no/~oddharry/dsfmc/etext/najaden.html" target="_blank" rel="noopener">Najaden — norsk skipsdagbok (UiO-arkiv)</a>
+          <span class="ref-desc">Arkivert norsk skipsdagbok fra 1700-tallet, brukt som stilreferanse og kilde til autentisk norsk sjøfartstradisjon.</span>
+        </li>
+        <li>
+          <a href="https://kartkatalog.geonorge.no/metadata/navigasjonsinstallasjoner-wfs/73e46cf4-d9f5-4d75-b148-bb5edf888c4a" target="_blank" rel="noopener">Navigasjonsinstallasjoner WFS — Geonorge / Kystverket</a>
+          <span class="ref-desc">Kystverkets åpne geodata over navigasjonsinstallasjoner, inkludert fyrlykter langs norskekysten.</span>
+        </li>
+        <li>
+          <a href="https://api.met.no/weatherapi/locationforecast/2.0/documentation" target="_blank" rel="noopener">Locationforecast 2.0 — Meteorologisk institutt</a>
+          <span class="ref-desc">API-dokumentasjon for værvarseltjenesten som leverer sanntidsdata for valgfrie koordinater, brukt til å hente vær ved hvert enkelt fyr.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
