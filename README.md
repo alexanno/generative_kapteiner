@@ -4,7 +4,7 @@ Et generativt kunstverk som skriver skipsdagbøker som aldri ble skrevet — for
 
 ## Hvordan det virker
 
-1. Tilfeldig fyr velges fra Kystverkets database langs Sørlandskysten
+1. Tilfeldig fyr velges fra Kystverkets database
 2. Sanntidsvær hentes fra Met.no sitt API for det valgte fyret
 3. Historiske skipsdagbøker brukes som stilreferanse
 4. En systeminstruks binder alt sammen til ett prompt
