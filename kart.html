@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kart — Generative Kapteiner</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@^6.6.0/dist/maplibre-gl.css">
   <style>
     :root {
       --bg: #f4efe5;
@@ -73,11 +73,12 @@
       flex: 1;
     }
 
-    .leaflet-popup-content-wrapper {
+    .maplibregl-popup-content {
       border-radius: 14px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       font-family: Georgia, "Times New Roman", serif;
+      padding: 12px 14px;
     }
 
     .popup-name {
@@ -123,17 +124,17 @@
   <div id="status-bar">Laster oppføringer...</div>
   <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    const map = L.map("map", { zoomControl: true });
+  <script type="module">
+    import * as maplibregl from "https://unpkg.com/maplibre-gl@^6.6.0/dist/maplibre-gl.mjs";
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: "abcd",
-      maxZoom: 19,
-    }).addTo(map);
+    const map = new maplibregl.Map({
+      container: "map",
+      style: "https://tiles.openfreemap.org/styles/positron",
+      center: [7.5, 58.5],
+      zoom: 6,
+    });
 
-    map.setView([58.5, 7.5], 6);
+    map.addControl(new maplibregl.NavigationControl());
 
     function parseCoords(coordStr) {
       if (!coordStr) return null;
@@ -217,13 +218,13 @@
             const coords = parseCoords(parsed.coordinates);
             if (!coords) return;
 
-            const marker = L.circleMarker([coords.lat, coords.lng], {
-              radius: 7,
-              color: "#164b63",
-              fillColor: "#164b63",
-              fillOpacity: 0.65,
-              weight: 1.5,
-            });
+            const el = document.createElement("div");
+            el.style.width = "14px";
+            el.style.height = "14px";
+            el.style.borderRadius = "50%";
+            el.style.background = "rgba(22, 75, 99, 0.65)";
+            el.style.border = "1.5px solid #164b63";
+            el.style.cursor = "pointer";
 
             const popupHtml = `
               <p class="popup-name">${parsed.location || parsed.title}</p>
@@ -231,7 +232,11 @@
               <p class="popup-date">${formatDate(entry.timestamp)}</p>
               <a class="popup-link" href="index.html#${encodeURIComponent(entry.filename)}">Åpne logg &rarr;</a>
             `;
-            marker.bindPopup(popupHtml);
+
+            const marker = new maplibregl.Marker({ element: el })
+              .setLngLat([coords.lng, coords.lat])
+              .setPopup(new maplibregl.Popup({ offset: 10 }).setHTML(popupHtml));
+
             markers.push({ marker, lat: coords.lat, lng: coords.lng });
             loaded++;
           } catch {
@@ -245,13 +250,11 @@
       }
 
       if (markers.length > 0) {
-        const lats = markers.map((m) => m.lat);
-        const lngs = markers.map((m) => m.lng);
-        const bounds = L.latLngBounds(
-          [Math.min(...lats), Math.min(...lngs)],
-          [Math.max(...lats), Math.max(...lngs)]
-        );
-        map.fitBounds(bounds, { padding: [40, 40] });
+        const bounds = new maplibregl.LngLatBounds();
+        for (const { lat, lng } of markers) {
+          bounds.extend([lng, lat]);
+        }
+        map.fitBounds(bounds, { padding: 40 });
       }
 
       const parts = [`${loaded} steder vist på kartet`];
