@@ -1,4 +1,4 @@
-# Loggbok Robot
+# Generative Kapteiner
 
 Et generativt kunstverk som skriver skipsdagbøker som aldri ble skrevet — forankret i ekte steder, ekte vær og en kapteins stemme fra en annen tid.
 

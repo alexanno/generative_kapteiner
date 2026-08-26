@@ -1,5 +1,5 @@
 [project]
-name = "loggbok-robot"
+name = "generative-kapteiner"
 version = "0.1.0"
 description = "Generate creative ship log entries using weather and location data with Ollama"
 readme = "README.md"
