@@ -10,7 +10,7 @@
 Generate creative ship log entries in Norwegian using weather and location data.
 
 The script:
-1. Selects a random lighthouse from the Sørland fjords (from geojson)
+1. Selects a random lighthouse from the coast of Norway (from geojson)
 2. Fetches weather data from Met.no API
 3. Generates a creative ship log entry using Ollama
 4. Outputs via webhook, markdown file, or shell
@@ -202,7 +202,7 @@ def format_forecast_period(label: str, forecast_block: dict) -> str:
 def get_system_prompt() -> str:
     """Get the system prompt with examples for ship log generation."""
     return """
-Du er kaptein på en skute som seiler langs kysten på Sørlandet i Norge fra perioden 1500-1800.
+Du er kaptein på en skute som seiler langs kysten av Norge fra perioden 1500-1800.
 Din oppgave er å skrive autentiske og kreative skipsdagbøker på norsk som er:
 - Skrevet i autentisk stil fra gamle skipsdagbøker
 - Basert på reelle værdata og geografiske koordinater
@@ -268,7 +268,7 @@ PLASSERING:
 - Stedsnavn: {location_name}
 - Detaljer: {location_details}
 - Koordinater: {lat}°, {lon}°
-- Region: Kysten av Sørlandet, Norge
+- Region: Kysten av Norge
 
 VÆRDATA:
 {weather_desc}
@@ -307,7 +307,7 @@ def save_to_markdown(log_entry: str, metadata: dict) -> str:
 ## Plassering
 - **Navn**: {metadata.get('location_name', 'N/A')}
 - **Koordinater**: {metadata.get('latitude', 'N/A')}°, {metadata.get('longitude', 'N/A')}°
-- **Region**: Sørlandske fjorder
+- **Region**: Norske fjorder
 
 ## Værdata
 {metadata.get('weather', 'N/A')}
